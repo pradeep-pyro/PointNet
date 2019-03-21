@@ -35,7 +35,8 @@ def test(model, dataloader, device):
 
 def main():
     # Argument parser
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Script for testing a \
+                                                  PointNet classifier")
     parser.add_argument("dataset_name", type=str, choices=("ModelNet40",),
                         help="Name of dataset")
     parser.add_argument("snapshot", default="", type=str,
@@ -57,6 +58,7 @@ def main():
     model = PointNetClassifier(num_classes=num_classes)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
+    model.eval()
 
     # Load weights if resuming training
     model.load_state_dict(torch.load(args.snapshot))
@@ -72,15 +74,16 @@ def main():
     # Print useful info
     print("Testing PointNet Classifier")
     print("Dataset: {}/{}".format(args.dataset_dir, args.dataset_name))
-    print("Split: ", "train" if args.train_set else "test")
+    print("Split: {}".format("train" if args.train_set else "test"))
     print("Snapshot: {}".format(args.snapshot))
 
     # Do testing
-    print("Start time: ", time.asctime())
+    start = time.time()
     accuracy, avg_time_per_batch = test(model, dataloader, device)
-    print('Accuracy: {:.2%}, time/batch: {:5.3f}s'
-          .format(accuracy, avg_time_per_batch))
-    print("End time: ", time.asctime())
+    elapsed = time.time() - start
+    print()
+    print('Accuracy: {:.2%}, elapsed time: {:.3f}s, avg. time/batch: {:.3f}s'
+          .format(accuracy, elapsed, avg_time_per_batch))
 
 
 
