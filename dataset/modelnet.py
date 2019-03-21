@@ -6,6 +6,9 @@ from torch.utils.data import Dataset
 
 
 def _create_input_pairs(dataset_path, training):
+    """
+    Creates (pointclouds, class_index) pairs from dataset path
+    """
     folders = [fol for fol in os.listdir(dataset_path)
                if osp.isdir(osp.join(dataset_path, fol))]
     label_strings = dict(zip(range(len(folders)), folders))
@@ -18,6 +21,9 @@ def _create_input_pairs(dataset_path, training):
 
 
 def _parse_off_vertices(filename):
+    """
+    Parses vertex data from OFF file
+    """
     lines = None
     with open(filename, 'r') as f:
         lines = f.readlines()
@@ -53,8 +59,25 @@ def _parse_off_vertices(filename):
 
 
 class ModelNet(Dataset):
+    """
+    ModelNet40 dataset for PyTorch
+    """
     def __init__(self, dataset_path, num_points=2048, training=True,
                  seed=None):
+        """
+        Parameters:
+        -----------
+        dataset_path: str
+            Root path to dataset
+        num_points: int
+            Number of points to choose from each model's vertices
+            (default: 2048)
+        training: bool
+            Whether to load training set (default: True)
+        seed: int/None
+            Random number seed for choosing points from model vertices
+            (default: None)
+        """
         super(ModelNet, self).__init__()
         self.training = training
         self.data_pairs, self.label_strings = _create_input_pairs(dataset_path, training)
@@ -63,6 +86,9 @@ class ModelNet(Dataset):
         self.seed = seed
 
     def index_to_label(self, index):
+        """
+        Helper function to convert class index to human readable label
+        """
         return self.label_strings.get(index, 'Unknown')
     
     def __len__(self):
