@@ -64,6 +64,8 @@ class PointNetFeatures(nn.Module):
         self.mlp2 = _mlp(64, 64, 128, 1024)
 
     def forward(self, x):
+        trans_inp = None
+        trans_feat = None
         if self._input_transform:
             trans_inp = self.stn1(x)
             x = torch.bmm(trans_inp, x)

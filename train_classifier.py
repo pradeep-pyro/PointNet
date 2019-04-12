@@ -27,8 +27,10 @@ def train(model, dataloader, optimizer, epoch, device, print_freq=10):
         optimizer.zero_grad()
         output, trans_inp, trans_feat = model(inputs)
         loss = F.cross_entropy(output, labels)
-        loss += 0.001 * orthogonality_constraint(trans_inp)
-        loss += 0.001 * orthogonality_constraint(trans_feat)
+        if trans_inp is not None:
+            loss += 0.001 * orthogonality_constraint(trans_inp)
+        if trans_feat is not None:
+            loss += 0.001 * orthogonality_constraint(trans_feat)
         loss.backward()
         optimizer.step()
         end = time.time()
